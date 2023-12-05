@@ -77,7 +77,7 @@ resource "volterra_azure_vnet_site" "this" {
     }
 
     dynamic "new_vnet" {
-      for_each = local.autogenerate_vnet ? [0] : [1]
+      for_each = local.autogenerate_vnet ? [0] : []
       content {
         primary_ipv4 = var.vnet_cidr
         name         = local.vnet_name
