@@ -1,7 +1,7 @@
 locals {
   master_nodes_in_az_count  = length(var.master_nodes_az_names)
   master_nodes_az_names     = var.master_nodes_az_names
-  autogenerate_vnet         = (false == (length(var.existing_inside_subnets) > 0 && length(var.existing_outside_subnets) > 0) || (length(var.existing_local_subnets) > 0))
+  autogenerate_vnet         = (false == ((length(var.existing_inside_subnets) > 0 && length(var.existing_outside_subnets) > 0) || (length(var.existing_local_subnets) > 0)))
   vnet_resource_group       = coalesce(var.vnet_rg_name, var.azure_rg_name)
   vnet_name                 = coalesce(var.vnet_name, format("%s-vnet", var.site_name))
   default_outside_sg_name   = "security-group"
