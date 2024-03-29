@@ -564,11 +564,11 @@ resource "volterra_cloud_site_labels" "labels" {
   ]
 }
 
-resource "time_sleep" "wait_10_seconds" {
-  # wait for 10 seconds until the site is created and validated
+resource "time_sleep" "wait_30_seconds" {
+  # wait for 30 seconds until the site is created and validated
   depends_on = [volterra_azure_vnet_site.this]
 
-  create_duration = "10s"
+  create_duration = "30s"
 }
 
 resource "volterra_tf_params_action" "action_apply" {
@@ -579,7 +579,7 @@ resource "volterra_tf_params_action" "action_apply" {
 
   depends_on = [
     volterra_azure_vnet_site.this,
-    time_sleep.wait_10_seconds
+    time_sleep.wait_30_seconds
   ]
 }
 
