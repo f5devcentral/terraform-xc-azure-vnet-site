@@ -4,11 +4,11 @@ terraform {
   required_providers {
     volterra = {
       source  = "volterraedge/volterra"
-      version = "0.11.34"
+      version = "0.11.37"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">=3.0.0"
+      version = ">=4.4.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
