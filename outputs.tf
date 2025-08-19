@@ -42,7 +42,7 @@ output "master_nodes_az_names" {
 
 output "vnet_resource_group" {
   description = "Azure VNET resource group name."
-  value = local.vnet_resource_group
+  value       = local.vnet_resource_group
 }
 
 output "vnet_name" {
@@ -53,7 +53,7 @@ output "vnet_name" {
 
 output "inside_rt_names" {
   description = "Azure VNET inside route table name."
-  value       =  local.autogenerate_vnet ? local.generated_inside_rt_names : local.existing_inside_rt_names
+  value       = local.autogenerate_vnet ? local.generated_inside_rt_names : local.existing_inside_rt_names
 }
 
 output "location" {

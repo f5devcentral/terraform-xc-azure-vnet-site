@@ -1,13 +1,13 @@
 locals {
-  master_nodes_in_az_count  = length(var.master_nodes_az_names)
-  master_nodes_az_names     = var.master_nodes_az_names
-  autogenerate_vnet         = (false == ((length(var.existing_inside_subnets) > 0 && length(var.existing_outside_subnets) > 0) || (length(var.existing_local_subnets) > 0)))
-  vnet_resource_group       = coalesce(var.vnet_rg_name, var.azure_rg_name)
-  vnet_name                 = coalesce(var.vnet_name, format("%s-vnet", var.site_name))
-  default_outside_sg_name   = "security-group"
-  location                  = coalesce(var.vnet_rg_location, var.azure_rg_location)
+  master_nodes_in_az_count = length(var.master_nodes_az_names)
+  master_nodes_az_names    = var.master_nodes_az_names
+  autogenerate_vnet        = (false == ((length(var.existing_inside_subnets) > 0 && length(var.existing_outside_subnets) > 0) || (length(var.existing_local_subnets) > 0)))
+  vnet_resource_group      = coalesce(var.vnet_rg_name, var.azure_rg_name)
+  vnet_name                = coalesce(var.vnet_name, format("%s-vnet", var.site_name))
+  default_outside_sg_name  = "security-group"
+  location                 = coalesce(var.vnet_rg_location, var.azure_rg_location)
 
-  existing_inside_rt_names  =  var.existing_inside_rt_names
+  existing_inside_rt_names  = var.existing_inside_rt_names
   generated_inside_rt_names = [for i in range(0, length(var.master_nodes_az_names)) : format("rt-%d", i)]
 }
 
@@ -91,7 +91,7 @@ resource "volterra_azure_vnet_site" "this" {
 
   logs_streaming_disabled = (null == var.log_receiver)
 
-  dynamic log_receiver {
+  dynamic "log_receiver" {
     for_each = null != var.log_receiver ? [0] : []
 
     content {
@@ -121,7 +121,7 @@ resource "volterra_azure_vnet_site" "this" {
   default_blocked_services = (true != var.block_all_services && null == var.blocked_service)
   block_all_services       = var.block_all_services
 
-  dynamic blocked_services {
+  dynamic "blocked_services" {
     for_each = (null != var.blocked_service && true != var.block_all_services) ? [0] : []
 
     content {
@@ -138,13 +138,13 @@ resource "volterra_azure_vnet_site" "this" {
   # Site type: Ingress Gateway
   #-----------------------------------------------------
 
-  dynamic ingress_gw {
+  dynamic "ingress_gw" {
     for_each = var.site_type == "ingress_gw" ? [0] : []
 
     content {
       azure_certified_hw = "azure-byol-voltmesh"
 
-      dynamic az_nodes {
+      dynamic "az_nodes" {
         for_each = { for idx, value in slice(local.master_nodes_az_names, 0, local.master_nodes_in_az_count) : tostring(idx) => value }
 
         content {
@@ -171,7 +171,7 @@ resource "volterra_azure_vnet_site" "this" {
       performance_enhancement_mode {
         perf_mode_l7_enhanced = (null == var.jumbo)
 
-        dynamic perf_mode_l3_enhanced {
+        dynamic "perf_mode_l3_enhanced" {
           for_each = (null != var.jumbo) ? [0] : []
           content {
             jumbo    = (true == var.jumbo) ? true : null
@@ -185,13 +185,13 @@ resource "volterra_azure_vnet_site" "this" {
   #-----------------------------------------------------
   # Ingress Egress Gateway
   #-----------------------------------------------------
-  dynamic ingress_egress_gw  {
+  dynamic "ingress_egress_gw" {
     for_each = var.site_type == "ingress_egress_gw" ? [0] : []
 
     content {
       azure_certified_hw = "azure-byol-multi-nic-voltmesh"
 
-      dynamic az_nodes {
+      dynamic "az_nodes" {
         for_each = { for idx, value in slice(local.master_nodes_az_names, 0, local.master_nodes_in_az_count) : tostring(idx) => value }
 
         content {
@@ -298,7 +298,7 @@ resource "volterra_azure_vnet_site" "this" {
 
       no_global_network = (length(var.global_network_connections_list) == 0)
 
-      dynamic global_network_list {
+      dynamic "global_network_list" {
         for_each = (length(var.global_network_connections_list) > 0) ? [0] : []
 
         content {
@@ -339,7 +339,7 @@ resource "volterra_azure_vnet_site" "this" {
 
       no_dc_cluster_group = (null == var.dc_cluster_group_inside_vn && null == var.dc_cluster_group_outside_vn)
 
-      dynamic dc_cluster_group_inside_vn {
+      dynamic "dc_cluster_group_inside_vn" {
         for_each = (null != var.dc_cluster_group_inside_vn) ? [0] : []
 
         content {
@@ -349,7 +349,7 @@ resource "volterra_azure_vnet_site" "this" {
         }
       }
 
-      dynamic dc_cluster_group_outside_vn {
+      dynamic "dc_cluster_group_outside_vn" {
         for_each = (null != var.dc_cluster_group_outside_vn) ? [0] : []
 
         content {
@@ -363,14 +363,14 @@ resource "volterra_azure_vnet_site" "this" {
       # Site Mesh Group Connection Type
       #-----------------------------------------------------
 
-      sm_connection_public_ip  = (true == var.sm_connection_public_ip)
-      sm_connection_pvt_ip     = (true != var.sm_connection_public_ip)
+      sm_connection_public_ip = (true == var.sm_connection_public_ip)
+      sm_connection_pvt_ip    = (true != var.sm_connection_public_ip)
 
       #-----------------------------------------------------
       # Manage Static Routes for Inside Network
       #-----------------------------------------------------
 
-      no_inside_static_routes  = (length(var.inside_static_route_list) == 0)
+      no_inside_static_routes = (length(var.inside_static_route_list) == 0)
 
       dynamic "inside_static_routes" {
         for_each = (length(var.inside_static_route_list) > 0) ? [0] : []
@@ -503,7 +503,7 @@ resource "volterra_azure_vnet_site" "this" {
                       dynamic "ipv4" {
                         for_each = (null != static_route_list.value.custom_static_route.subnets.ipv4) ? [0] : []
                         content {
-                          plen  = static_route_list.value.custom_static_route.subnets.ipv4.plen
+                          plen   = static_route_list.value.custom_static_route.subnets.ipv4.plen
                           prefix = static_route_list.value.custom_static_route.subnets.ipv4.prefix
                         }
                       }
@@ -537,7 +537,7 @@ resource "volterra_azure_vnet_site" "this" {
       performance_enhancement_mode {
         perf_mode_l7_enhanced = (null == var.jumbo)
 
-        dynamic perf_mode_l3_enhanced {
+        dynamic "perf_mode_l3_enhanced" {
           for_each = (null != var.jumbo) ? [0] : []
           content {
             jumbo    = (true == var.jumbo) ? true : null
@@ -585,10 +585,10 @@ resource "volterra_tf_params_action" "action_apply" {
 
 locals {
   tf_output = resource.volterra_tf_params_action.action_apply.tf_output
-  lines = split("\n", trimspace(local.tf_output))
-  output_map = { 
+  lines     = split("\n", trimspace(local.tf_output))
+  output_map = {
     for line in local.lines :
-      trimspace(element(split("=", line), 0)) => jsondecode(trimspace(element(split("=", line), 1)))
+    trimspace(element(split("=", line), 0)) => jsondecode(trimspace(element(split("=", line), 1)))
     if can(regex("=", line))
   }
 }
@@ -610,7 +610,7 @@ data "azurerm_subnet" "existing_local_subnets" {
 }
 
 module "outside_nsg_rules" {
-  count = var.apply_outside_sg_rules ? 1 : 0
+  count   = var.apply_outside_sg_rules ? 1 : 0
   source  = "f5devcentral/azure-vnet-site-networking/xc//modules/azure-nsg-rules"
   version = "0.0.1"
 
@@ -670,7 +670,7 @@ resource "azurerm_route" "private_gw" {
   next_hop_in_ip_address = var.worker_nodes_per_az > 0 ? data.azurerm_lb.this[0].private_ip_address : data.azurerm_network_interface.sli[count.index].private_ip_address
   next_hop_type          = "VirtualAppliance"
 
-  depends_on = [ 
+  depends_on = [
     volterra_azure_vnet_site.this,
     volterra_tf_params_action.action_apply,
   ]

@@ -6,20 +6,20 @@ provider "volterra" {
 provider "azurerm" {
   features {}
 
-  subscription_id   = var.azure_subscription_id
-  tenant_id         = var.azure_subscription_tenant_id
-  client_id         = var.azure_service_principal_appid
-  client_secret     = var.azure_service_principal_password
+  subscription_id = var.azure_subscription_id
+  tenant_id       = var.azure_subscription_tenant_id
+  client_id       = var.azure_service_principal_appid
+  client_secret   = var.azure_service_principal_password
 }
 
 provider "azuread" {
-  tenant_id = var.azure_subscription_tenant_id
-  client_id         = var.azure_service_principal_appid
-  client_secret     = var.azure_service_principal_password
+  tenant_id     = var.azure_subscription_tenant_id
+  client_id     = var.azure_service_principal_appid
+  client_secret = var.azure_service_principal_password
 }
 
 module "azure_vnet_site" {
-  source                = "../.."
+  source = "../.."
 
   site_name             = var.name
   azure_rg_location     = var.azure_rg_location
@@ -33,10 +33,10 @@ module "azure_vnet_site" {
   az_cloud_credentials_name = module.azure_cloud_credentials.name
   block_all_services        = false
 
-  global_network_connections_list = [{ 
-    sli_to_global_dr = { 
-      global_vn = { 
-        name = "sli-to-global-dr" 
+  global_network_connections_list = [{
+    sli_to_global_dr = {
+      global_vn = {
+        name = "sli-to-global-dr"
       }
     }
   }]
@@ -46,7 +46,7 @@ module "azure_vnet_site" {
     key2 = "value2"
   }
 
-  depends_on = [ 
+  depends_on = [
     module.azure_cloud_credentials
   ]
 }

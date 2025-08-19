@@ -1,0 +1,121 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Terraform: Format",
+      "type": "shell",
+      "command": "terraform",
+      "args": [
+        "fmt",
+        "-recursive"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Terraform: Validate",
+      "type": "shell",
+      "command": "terraform",
+      "args": [
+        "validate"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "dependsOn": "Terraform: Init (no backend)"
+    },
+    {
+      "label": "Terraform: Init (no backend)",
+      "type": "shell",
+      "command": "terraform",
+      "args": [
+        "init",
+        "-backend=false"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "TFLint: Initialize",
+      "type": "shell",
+      "command": "tflint",
+      "args": [
+        "--init"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "TFLint: Run",
+      "type": "shell",
+      "command": "tflint",
+      "args": [
+        "--format",
+        "compact"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "dependsOn": "TFLint: Initialize",
+      "problemMatcher": [
+        {
+          "owner": "tflint",
+          "fileLocation": "relative",
+          "pattern": {
+            "regexp": "^([^:]+):(\\d+):(\\d+):\\s+(Error|Warning|Notice):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "severity": 4,
+            "message": 5
+          }
+        }
+      ]
+    },
+    {
+      "label": "Terraform: Full Lint Check",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Terraform: Format",
+        "Terraform: Validate",
+        "TFLint: Run"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    }
+  ]
+}

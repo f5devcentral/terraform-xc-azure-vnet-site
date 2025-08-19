@@ -220,24 +220,6 @@ variable "outside_subnets" {
   default     = []
 }
 
-variable "local_subnets_ipv6" {
-  description = "Local Subnets for the Site."
-  type        = list(string)
-  default     = []
-}
-
-variable "inside_subnets_ipv6" {
-  description = "Inside Subnets for the Site."
-  type        = list(string)
-  default     = []
-}
-
-variable "outside_subnets_ipv6" {
-  description = "Outside Subnets for the Site."
-  type        = list(string)
-  default     = []
-}
-
 #-----------------------------------------------------------
 # Worker Nodes
 #-----------------------------------------------------------
@@ -268,22 +250,6 @@ variable "blocked_service" {
     network_type       = optional(string)
   })
   default = null
-}
-
-#-----------------------------------------------------------
-# Apply Action
-#-----------------------------------------------------------
-
-variable "apply_action_wait_for_action" {
-  description = "Wait for terraform action job to complete."
-  type        = bool
-  default     = true
-}
-
-variable "apply_action_ignore_on_update" {
-  description = "Ignore action to perform during update."
-  type        = bool
-  default     = false
 }
 
 #-----------------------------------------------------------
@@ -338,14 +304,14 @@ variable "global_network_connections_list" {
   description = "Global network connections."
   type = list(object({
     sli_to_global_dr = optional(object({
-      global_vn  = object({
+      global_vn = object({
         name      = string
         namespace = optional(string)
         tenant    = optional(string)
       })
     }))
     slo_to_global_dr = optional(object({
-      global_vn  = object({
+      global_vn = object({
         name      = string
         namespace = optional(string)
         tenant    = optional(string)
@@ -363,7 +329,7 @@ variable "inside_static_route_list" {
   description = "List of Inside Static routes."
   type = list(object({
     custom_static_route = optional(object({
-      attrs = optional(list(string))
+      attrs  = optional(list(string))
       labels = optional(string)
       nexthop = optional(object({
         interface = optional(object({
@@ -401,7 +367,7 @@ variable "outside_static_route_list" {
   description = "List of Outside Static routes."
   type = list(object({
     custom_static_route = optional(object({
-      attrs = optional(list(string))
+      attrs  = optional(list(string))
       labels = optional(string)
       nexthop = optional(object({
         interface = optional(object({
