@@ -10,7 +10,8 @@ This Terraform module creates and manages F5 Distributed Cloud (XC) Azure VNET S
 
 ```hcl
 module "xc_azure_vnet_site" {
-  source = "f5shemyakin/terraform-xc-azure-vnet-site"
+  source  = "f5devcentral/azure-vnet-site/xc"
+  version = "0.0.8"
 
   # Site Configuration
   site_name        = "my-azure-site"

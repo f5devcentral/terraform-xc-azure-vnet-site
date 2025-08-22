@@ -53,11 +53,12 @@ module "azure_vnet_site" {
 
 module "azure_cloud_credentials" {
   source  = "f5devcentral/azure-cloud-credentials/xc"
-  version = "0.0.4"
+  version = "0.0.7"
 
   name                  = format("%s-creds", var.name)
   azure_subscription_id = var.azure_subscription_id
   azure_tenant_id       = var.azure_subscription_tenant_id
+  create_sa             = true
   azure_client_id       = var.azure_service_principal_appid
   azure_client_secret   = var.azure_service_principal_password
 }

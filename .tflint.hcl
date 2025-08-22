@@ -3,10 +3,10 @@ plugin "terraform" {
   preset  = "recommended"
 }
 
-plugin "aws" {
+plugin "azurerm" {
   enabled = true
   version = "0.29.0"
-  source  = "github.com/terraform-linters/tflint-ruleset-aws"
+  source  = "github.com/terraform-linters/tflint-ruleset-azurerm"
 }
 
 rule "terraform_deprecated_interpolation" {
@@ -46,16 +46,8 @@ rule "terraform_standard_module_structure" {
   enabled = true
 }
 
-# AWS-specific rules
-rule "aws_resource_missing_tags" {
+# Azure-specific rules
+rule "azurerm_resource_missing_tags" {
   enabled = true
   tags = ["Name", "Environment"]
-}
-
-rule "aws_instance_invalid_type" {
-  enabled = true
-}
-
-rule "aws_security_group_rule_invalid_protocol" {
-  enabled = true
 }

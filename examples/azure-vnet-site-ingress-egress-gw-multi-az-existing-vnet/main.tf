@@ -18,7 +18,7 @@ provider "azuread" {
 
 module "azure_vnet" {
   source  = "f5devcentral/azure-vnet-site-networking/xc"
-  version = "0.0.1"
+  version = "0.0.4"
 
   name                = format("%s-vnet", var.name)
   resource_group_name = format("%s-rg", var.name)
@@ -71,7 +71,7 @@ module "azure_vnet_site" {
 
 module "azure_cloud_credentials" {
   source  = "f5devcentral/azure-cloud-credentials/xc"
-  version = "0.0.4"
+  version = "0.0.7"
 
   name                  = format("%s-creds", var.name)
   azure_subscription_id = var.azure_subscription_id

@@ -53,7 +53,7 @@ module "azure_vnet_site" {
 
 module "azure_cloud_credentials" {
   source  = "f5devcentral/azure-cloud-credentials/xc"
-  version = "0.0.5"
+  version = "0.0.7"
 
   name                  = format("%s-creds", var.name)
   azure_subscription_id = var.azure_subscription_id

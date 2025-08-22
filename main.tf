@@ -612,7 +612,7 @@ data "azurerm_subnet" "existing_local_subnets" {
 module "outside_nsg_rules" {
   count   = var.apply_outside_sg_rules ? 1 : 0
   source  = "f5devcentral/azure-vnet-site-networking/xc//modules/azure-nsg-rules"
-  version = "0.0.1"
+  version = "0.0.4"
 
   resource_group_name         = var.azure_rg_name
   network_security_group_name = local.default_outside_sg_name
