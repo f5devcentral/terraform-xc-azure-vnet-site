@@ -1,1 +1,135 @@
-# terraform-xc-cloud-azure-vnet-site
+# Terraform F5 XC Azure VNET Site Module
+
+This Terraform module creates and manages F5 Distributed Cloud (XC) Azure VNET Sites. It supports both ingress gateway and ingress/egress gateway configurations with single or multi-availability zone deployments.
+
+> **Note**: This module is developed and maintained by the [F5 DevCentral](https://github.com/f5devcentral) community. You can use this module as an example for your own development projects.
+
+## Usage
+
+### Basic Example
+
+```hcl
+module "xc_azure_vnet_site" {
+  source  = "f5devcentral/azure-vnet-site/xc"
+  version = "0.0.8"
+
+  # Site Configuration
+  site_name        = "my-azure-site"
+  site_description = "Azure VNET Site for F5 XC"
+  site_namespace   = "system"
+  site_type        = "ingress_gw"
+
+  # Azure Configuration
+  azure_rg_name     = "my-resource-group"
+  azure_rg_location = "East US"
+
+  # Master Nodes
+  master_nodes_az_names = ["1", "2", "3"]
+
+  # Tags
+  tags = {
+    Environment = "production"
+    Project     = "f5-xc"
+  }
+}
+```
+
+## Requirements
+
+| Name      | Version  |
+| --------- | -------- |
+| terraform | >= 1.4.0 |
+| azuread   | >=3.5.0  |
+| azurerm   | >=4.39.0 |
+| time      | >=0.13.1 |
+| tls       | >=4.1.0  |
+| volterra  | 0.11.44  |
+
+## Providers
+
+| Name     | Version  |
+| -------- | -------- |
+| azuread  | >=3.5.0  |
+| azurerm  | >=4.39.0 |
+| time     | >=0.13.1 |
+| tls      | >=4.1.0  |
+| volterra | 0.11.44  |
+
+## Inputs
+
+| Name                         | Description                                                                                                                                       | Type           | Default        |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | -------------- |
+| site\_name                   | The name of the Azure VNET Site that will be configured.                                                                                          | `string`       | n/a            |
+| azure\_rg\_name              | Azure Resource Group Name where Azure VNET Site will be deployed.                                                                                 | `string`       | n/a            |
+| azure\_rg\_location          | Azure Resource Group Location where Azure VNET Site will be deployed.                                                                             | `string`       | n/a            |
+| master\_nodes\_az\_names     | Azure Availability Zone Names where the Master Nodes will be placed.                                                                              | `list(string)` | n/a            |
+| site\_description            | The description for the Azure VNET Site that will be configured.                                                                                  | `string`       | `null`         |
+| site\_namespace              | The namespace where Azure VNET Site that will be configured.                                                                                      | `string`       | `"system"`     |
+| site\_type                   | The site\_type variable is used to specify the type of site that will be deployed. Available values: ingress\_gw, ingress\_egress\_gw, app\_stack | `string`       | `"ingress_gw"` |
+| tags                         | A map of tags to add to all resources.                                                                                                            | `map(string)`  | `{}`           |
+| offline\_survivability\_mode | Enable/Disable offline survivability mode.                                                                                                        | `bool`         | `false`        |
+| software\_version            | F5XC Software Version is optional parameter, which allows to specify target SW version for particular site e.g. crt-20210329-1002.                | `string`       | `null`         |
+| operating\_system\_version   | Operating System Version is optional parameter, which allows to specify target OS version for particular site e.g. 7.2009.10.                     | `string`       | `null`         |
+
+## Outputs
+
+| Name                       | Description                                    |
+| -------------------------- | ---------------------------------------------- |
+| name                       | Name of the configured Azure VNET Site.        |
+| id                         | ID of the configured Azure VNET Site.          |
+| ssh\_private\_key\_pem     | Azure VNET Site generated private key.         |
+| ssh\_private\_key\_openssh | Azure VNET Site generated OpenSSH private key. |
+
+## Examples
+
+This module includes several example configurations:
+
+- [**Single AZ with Auto-generated VNET**](./examples/azure-vnet-site-ingress-egress-gw-single-az-autogenerated-vnet/) - Deploy a single availability zone site with auto-generated VNET
+- [**Single AZ with Existing VNET**](./examples/azure-vnet-site-ingress-egress-gw-single-az-existing-vnet/) - Deploy a single availability zone site using existing VNET
+- [**Multi AZ with Auto-generated VNET**](./examples/azure-vnet-site-ingress-egress-gw-multi-az-autogenerated-vnet/) - Deploy across multiple availability zones with auto-generated VNET  
+- [**Multi AZ with Existing VNET**](./examples/azure-vnet-site-ingress-egress-gw-multi-az-existing-vnet/) - Deploy across multiple availability zones using existing VNET
+
+## Site Types
+
+### Ingress Gateway (`ingress_gw`)
+- Handles incoming traffic to applications
+- Single interface configuration
+- Suitable for simple ingress scenarios
+
+### Ingress/Egress Gateway (`ingress_egress_gw`)  
+- Handles both incoming and outgoing traffic
+- Multiple interface configuration (inside/outside)
+- Full gateway functionality with advanced networking
+
+### App Stack (`app_stack`)
+- Includes application workload capabilities
+- Compute resources for running applications
+- Full stack deployment option
+
+## Network Configuration
+
+The module supports flexible network configurations:
+
+- **Auto-generated VNETs**: The module can create new VNETs with appropriate subnets
+- **Existing VNETs**: Use existing Azure VNETs and subnets
+- **Inside/Outside Subnets**: Configure separate networks for internal and external traffic
+- **Local Subnets**: Additional subnets for local connectivity
+
+## Security
+
+- Automatic SSH key generation or use existing keys
+- Azure Network Security Group integration
+- Support for custom security group rules
+- DC cluster group membership for secure site-to-site connectivity
+
+## License
+
+This project is licensed under the terms specified in the [LICENSE](./LICENSE) file.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Support
+
+For support and questions, please refer to the F5 Distributed Cloud documentation or open an issue in this repository.

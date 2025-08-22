@@ -1,0 +1,69 @@
+name: Terraform Lint
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  tflint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Cache plugin dir
+      uses: actions/cache@v3
+      with:
+        path: ~/.tflint.d/plugins
+        key: ${{ hashFiles('.tflint.hcl') }}
+    
+    - uses: terraform-linters/setup-tflint@v4
+      with:
+        tflint_version: v0.50.3
+    
+    - name: Show version
+      run: tflint --version
+    
+    - name: Init TFLint
+      run: tflint --init
+    
+    - name: Run TFLint
+      run: tflint --format compact
+    
+    - name: Run TFLint on modules
+      run: |
+        find . -name "*.tf" -exec dirname {} \; | sort -u | while read dir; do
+          echo "Linting $dir"
+          (cd "$dir" && tflint --format compact)
+        done
+
+  terraform-fmt:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.8.0"
+    
+    - name: Terraform Format Check
+      run: terraform fmt -check -recursive -diff
+
+  terraform-validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.8.0"
+    
+    - name: Terraform Init
+      run: terraform init -backend=false
+    
+    - name: Terraform Validate
+      run: terraform validate
